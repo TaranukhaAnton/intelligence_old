@@ -1,0 +1,158 @@
+<div>
+  <div class="d-flex justify-content-center">
+    <div class="col-md-8">
+      <h1 data-cy="registerTitle">Реєстрація</h1>
+
+      <div class="alert alert-success" *ngIf="success">
+        <strong>Реєстрація успішна!</strong> Будь ласка, перевірте електронну пошту для підтвердження.
+      </div>
+
+      <div class="alert alert-danger" *ngIf="error"><strong>Помилка при реєстрації!</strong> Будь ласка, спробуйте пізніше.</div>
+
+      <div class="alert alert-danger" *ngIf="errorUserExists">
+        <strong>Обліковий запис з таким логіном вже зареєстровано!</strong> Будь ласка, виберіть інший логін.
+      </div>
+
+      <div class="alert alert-danger" *ngIf="errorEmailExists">
+        <strong>Ця електронна пошта зайнята!</strong> Будь ласка, виберіть іншу.
+      </div>
+
+      <div class="alert alert-danger" *ngIf="doNotMatch">Пароль і його підтвердження не збігаються!</div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center">
+    <div class="col-md-8">
+      <form name="form" role="form" (ngSubmit)="register()" [formGroup]="registerForm" *ngIf="!success">
+        <div class="mb-3">
+          <label class="form-label" for="login">Логін</label>
+          <input
+            type="text"
+            class="form-control"
+            id="login"
+            name="login"
+            placeholder="Ваш логін"
+            formControlName="login"
+            data-cy="username"
+            #login
+          />
+
+          <div *ngIf="registerForm.get('login')!.invalid && (registerForm.get('login')!.dirty || registerForm.get('login')!.touched)">
+            <small class="form-text text-danger" *ngIf="registerForm.get('login')?.errors?.required"> Необхідно ввести логін. </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('login')?.errors?.minlength">
+              Ваш логін має містити хоча б 1 символ.
+            </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('login')?.errors?.maxlength">
+              Ваш логін не може бути довшим, ніж 50 символів.
+            </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('login')?.errors?.pattern"> Your username is invalid. </small>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="email">Електронна пошта</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            placeholder="Ваша електронна пошта"
+            formControlName="email"
+            data-cy="email"
+          />
+
+          <div *ngIf="registerForm.get('email')!.invalid && (registerForm.get('email')!.dirty || registerForm.get('email')!.touched)">
+            <small class="form-text text-danger" *ngIf="registerForm.get('email')?.errors?.required">
+              Електронну пошту необхідно вказати
+            </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('email')?.errors?.invalid"> Eлектронна пошта невірна </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('email')?.errors?.minlength">
+              Довжина електронної пошти повинна бути хоча б 5 символів
+            </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('email')?.errors?.maxlength">
+              Довжина електронної пошти не може бути більшою, ніж 50 cимволів
+            </small>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="password">Новий пароль</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Новий пароль"
+            formControlName="password"
+            data-cy="firstPassword"
+          />
+
+          <div
+            *ngIf="registerForm.get('password')!.invalid && (registerForm.get('password')!.dirty || registerForm.get('password')!.touched)"
+          >
+            <small class="form-text text-danger" *ngIf="registerForm.get('password')?.errors?.required"> Пароль необхідно вказати. </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('password')?.errors?.minlength">
+              Довжина пароля повинна бути хоча б 4 символів
+            </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('password')?.errors?.maxlength">
+              Пароль не може бути довшим ніж 50 cимволів
+            </small>
+          </div>
+
+          <jhi-password-strength-bar [passwordToCheck]="registerForm.get('password')!.value"></jhi-password-strength-bar>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="confirmPassword">Підтвердження нового пароля</label>
+          <input
+            type="password"
+            class="form-control"
+            id="confirmPassword"
+            name="confirmPassword"
+            placeholder="Підтвердіть новий пароль"
+            formControlName="confirmPassword"
+            data-cy="secondPassword"
+          />
+
+          <div
+            *ngIf="
+              registerForm.get('confirmPassword')!.invalid &&
+              (registerForm.get('confirmPassword')!.dirty || registerForm.get('confirmPassword')!.touched)
+            "
+          >
+            <small class="form-text text-danger" *ngIf="registerForm.get('confirmPassword')?.errors?.required">
+              Підтвердження пароля необхідно вказати.
+            </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('confirmPassword')?.errors?.minlength">
+              Довжина підтвердження пароля повинна бути хоча б 4 символів
+            </small>
+
+            <small class="form-text text-danger" *ngIf="registerForm.get('confirmPassword')?.errors?.maxlength">
+              Підтвердження пароля не може бути довшим ніж 50 cимволів
+            </small>
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="registerForm.invalid" class="btn btn-primary" data-cy="submit">Зареєструватися</button>
+      </form>
+
+      <div class="mt-3 alert alert-warning">
+        <span>Якщо ви хочете </span>
+        <a class="alert-link" routerLink="/login">авторизуватися</a
+        ><span
+          >, ви можете спробувати облікові записи за замовчуванням:<br />- Адмiністратор (логін="admin" і пароль="admin") <br />- Користувач
+          (логін="user" і пароль="user").</span
+        >
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+<div>
+  <h2 id="session-page-heading" *ngIf="account">
+    Активні сесії для [<strong>{{ account.login }}</strong
+    >]
+  </h2>
+
+  <div class="alert alert-success" *ngIf="success">
+    <strong>Сесія минула!</strong>
+  </div>
+
+  <div class="alert alert-danger" *ngIf="error"><strong>Сталася помилка!</strong> Сесія не може бути завершена.</div>
+
+  <div class="table-responsive">
+    <table class="table table-striped" aria-describedby="session-page-heading">
+      <thead>
+        <tr>
+          <th scope="col">IP адреса</th>
+          <th scope="col">User Agent</th>
+          <th scope="col">Дата</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let session of sessions">
+          <td>{{ session.ipAddress }}</td>
+          <td>{{ session.userAgent }}</td>
+          <td>{{ session.tokenDate | date: 'longDate' }}</td>
+          <td>
+            <button type="submit" class="btn btn-primary" (click)="invalidate(session.series)">Завершити</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

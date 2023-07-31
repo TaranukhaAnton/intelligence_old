@@ -1,0 +1,16 @@
+<div>
+  <div class="d-flex justify-content-center">
+    <div class="col-md-8">
+      <h1>Активація</h1>
+
+      <div class="alert alert-success" *ngIf="success">
+        <span><strong>Ваш обліковий запис був активований.</strong> Будь ласка, </span>
+        <a class="alert-link" routerLink="/login">авторизуватися</a>.
+      </div>
+
+      <div class="alert alert-danger" *ngIf="error">
+        <strong>Ваш обліковий запис не може бути активований.</strong> Будь ласка, скористайтеся формою реєстрації.
+      </div>
+    </div>
+  </div>
+</div>
