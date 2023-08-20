@@ -1,0 +1,55 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="report">
+      <h2 data-cy="reportDetailsHeading"><span>Report</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ report.id }}</span>
+        </dd>
+        <dt><span>Name</span></dt>
+        <dd>
+          <span>{{ report.name }}</span>
+        </dd>
+        <dt><span>Date</span></dt>
+        <dd>
+          <span>{{ report.date | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span>Path</span></dt>
+        <dd>
+          <span>{{ report.path }}</span>
+        </dd>
+        <dt><span>Resource Id</span></dt>
+        <dd>
+          <span>{{ report.resourceId }}</span>
+        </dd>
+        <dt><span>Conclusion</span></dt>
+        <dd>
+          <span>{{ report.conclusion }}</span>
+        </dd>
+        <dt><span>Content</span></dt>
+        <dd>
+          <div *ngIf="report.content">
+            <a (click)="openFile(report.content, report.contentContentType)">Відкрити</a>
+            {{ report.contentContentType }}, {{ byteSize(report.content) }}
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Назад</span>
+      </button>
+
+      <button type="button" [routerLink]="['/report', report.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Змінити</span>
+      </button>
+    </div>
+  </div>
+</div>

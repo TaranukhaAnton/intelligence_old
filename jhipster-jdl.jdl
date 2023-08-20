@@ -1,0 +1,54 @@
+
+entity Report {
+	name String
+   	date ZonedDateTime
+   	path String 
+    resourceId String
+    conclusion String   
+    content Blob   
+}
+
+
+entity Message {
+	date ZonedDateTime
+    frequency String
+    senderCallSign String
+    recieverCallSign String
+    text String
+    sourceUuid String
+    }
+    
+entity TriangulationPoint{
+        frequency String required,
+        date ZonedDateTime
+        description String,
+        latitude Float required,
+        longitude Float required,
+    }
+    
+entity	TriangulationReport{
+		date ZonedDateTime
+        name String 
+        conclusion String   
+}
+    
+
+
+
+
+relationship OneToMany {
+  Report{messages} to Message,
+  TriangulationReport{points} to TriangulationPoint,
+ 
+  }
+
+paginate all with pagination
+
+// Use Data Transfert Objects (DTO)
+// dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl 
+
+// Set an angular suffix
+// angularSuffix * with mySuffix

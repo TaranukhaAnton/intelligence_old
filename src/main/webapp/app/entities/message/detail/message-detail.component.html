@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="message">
+      <h2 data-cy="messageDetailsHeading"><span>Message</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ message.id }}</span>
+        </dd>
+        <dt><span>Date</span></dt>
+        <dd>
+          <span>{{ message.date | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span>Frequency</span></dt>
+        <dd>
+          <span>{{ message.frequency }}</span>
+        </dd>
+        <dt><span>Sender Call Sign</span></dt>
+        <dd>
+          <span>{{ message.senderCallSign }}</span>
+        </dd>
+        <dt><span>Reciever Call Sign</span></dt>
+        <dd>
+          <span>{{ message.recieverCallSign }}</span>
+        </dd>
+        <dt><span>Text</span></dt>
+        <dd>
+          <span>{{ message.text }}</span>
+        </dd>
+        <dt><span>Source Uuid</span></dt>
+        <dd>
+          <span>{{ message.sourceUuid }}</span>
+        </dd>
+        <dt><span>Report</span></dt>
+        <dd>
+          <div *ngIf="message.report">
+            <a [routerLink]="['/report', message.report.id, 'view']">{{ message.report.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Назад</span>
+      </button>
+
+      <button type="button" [routerLink]="['/message', message.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Змінити</span>
+      </button>
+    </div>
+  </div>
+</div>

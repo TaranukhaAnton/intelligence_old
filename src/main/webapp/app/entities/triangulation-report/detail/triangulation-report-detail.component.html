@@ -1,0 +1,40 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="triangulationReport">
+      <h2 data-cy="triangulationReportDetailsHeading"><span>Triangulation Report</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ triangulationReport.id }}</span>
+        </dd>
+        <dt><span>Date</span></dt>
+        <dd>
+          <span>{{ triangulationReport.date | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span>Name</span></dt>
+        <dd>
+          <span>{{ triangulationReport.name }}</span>
+        </dd>
+        <dt><span>Conclusion</span></dt>
+        <dd>
+          <span>{{ triangulationReport.conclusion }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Назад</span>
+      </button>
+
+      <button type="button" [routerLink]="['/triangulation-report', triangulationReport.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Змінити</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -21,3 +21,13 @@ Main page styles
     background-size: contain;
   }
 }
+agm-map {
+  height: 300px;
+}
+
+
+.marker-position {
+  bottom: 20px;
+  left: 0;
+  position: absolute;
+}

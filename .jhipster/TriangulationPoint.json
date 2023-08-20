@@ -1,0 +1,46 @@
+{
+  "applications": "*",
+  "changelogDate": "20230731145319",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "triangulation_point",
+  "fields": [
+    {
+      "fieldName": "frequency",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "date",
+      "fieldType": "ZonedDateTime"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "latitude",
+      "fieldType": "Float",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "longitude",
+      "fieldType": "Float",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "TriangulationPoint",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "triangulationReport",
+      "otherEntityRelationshipName": "points",
+      "relationshipName": "triangulationReport",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceImpl"
+}

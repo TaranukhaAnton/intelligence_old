@@ -1,0 +1,147 @@
+<div>
+  <h2 id="page-heading" data-cy="TriangulationPointHeading">
+    <span>Triangulation Points</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-triangulation-point"
+        [routerLink]="['/triangulation-point/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span> Створити новий Triangulation Point </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="triangulationPoints?.length === 0">
+    <span>No Triangulation Points found</span>
+  </div>
+
+  <div class="table-responsive table-entities" id="entities" *ngIf="triangulationPoints && triangulationPoints.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span>ID</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="frequency">
+            <div class="d-flex">
+              <span>Frequency</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="date">
+            <div class="d-flex">
+              <span>Date</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="description">
+            <div class="d-flex">
+              <span>Description</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="latitude">
+            <div class="d-flex">
+              <span>Latitude</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="longitude">
+            <div class="d-flex">
+              <span>Longitude</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="triangulationReport.id">
+            <div class="d-flex">
+              <span>Triangulation Report</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let triangulationPoint of triangulationPoints; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/triangulation-point', triangulationPoint.id, 'view']">{{ triangulationPoint.id }}</a>
+          </td>
+          <td>{{ triangulationPoint.frequency }}</td>
+          <td>{{ triangulationPoint.date | formatMediumDatetime }}</td>
+          <td>{{ triangulationPoint.description }}</td>
+          <td>{{ triangulationPoint.latitude }}</td>
+          <td>{{ triangulationPoint.longitude }}</td>
+          <td>
+            <div *ngIf="triangulationPoint.triangulationReport">
+              <a [routerLink]="['/triangulation-report', triangulationPoint.triangulationReport.id, 'view']">{{
+                triangulationPoint.triangulationReport.id
+              }}</a>
+            </div>
+          </td>
+          <td class="text-end">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/triangulation-point', triangulationPoint.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline">Перегляд</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/triangulation-point', triangulationPoint.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline">Змінити</span>
+              </button>
+
+              <button type="submit" (click)="delete(triangulationPoint)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline">Видалити</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="triangulationPoints && triangulationPoints.length > 0">
+    <div class="d-flex justify-content-center">
+      <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [page]="page"
+        [pageSize]="itemsPerPage"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="navigateToPage($event)"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>

@@ -50,6 +50,12 @@ public class CacheConfiguration {
             createCache(cm, ua.intelligence.domain.User.class.getName() + ".authorities");
             createCache(cm, ua.intelligence.domain.PersistentToken.class.getName());
             createCache(cm, ua.intelligence.domain.User.class.getName() + ".persistentTokens");
+            createCache(cm, ua.intelligence.domain.Report.class.getName());
+            createCache(cm, ua.intelligence.domain.Report.class.getName() + ".messages");
+            createCache(cm, ua.intelligence.domain.Message.class.getName());
+            createCache(cm, ua.intelligence.domain.TriangulationPoint.class.getName());
+            createCache(cm, ua.intelligence.domain.TriangulationReport.class.getName());
+            createCache(cm, ua.intelligence.domain.TriangulationReport.class.getName() + ".points");
             // jhipster-needle-ehcache-add-entry
         };
     }

@@ -30,6 +30,7 @@ export class DataUtils {
   openFile(data: string, contentType: string | null | undefined): void {
     contentType = contentType ?? '';
 
+
     const byteCharacters = atob(data);
     const byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
@@ -40,7 +41,39 @@ export class DataUtils {
       type: contentType,
     });
     const fileURL = window.URL.createObjectURL(blob);
-    const win = window.open(fileURL);
+
+    var link = document.createElement('a');
+    link.href = fileURL;
+    link.download = "test.docx";
+    link.click();
+
+
+    // const win = window.open(fileURL);
+    // win!.onload = function () {
+    //   URL.revokeObjectURL(fileURL);
+    // };
+  }
+
+
+
+
+
+
+  openFileF(data: string, contentType: string | null | undefined): void {
+    contentType = contentType ?? '';
+    let filename =  'test.docx';
+
+    const byteCharacters = atob(data);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], {
+      type: contentType,
+    });
+    const fileURL = window.URL.createObjectURL(blob);
+    const win = window.open(fileURL, filename);
     win!.onload = function () {
       URL.revokeObjectURL(fileURL);
     };

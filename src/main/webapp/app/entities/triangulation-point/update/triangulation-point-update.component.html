@@ -1,0 +1,112 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-triangulation-point-heading" data-cy="TriangulationPointCreateUpdateHeading">
+        Створити чи редагувати Triangulation Point
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_frequency">Frequency</label>
+          <input type="text" class="form-control" name="frequency" id="field_frequency" data-cy="frequency" formControlName="frequency" />
+          <div *ngIf="editForm.get('frequency')!.invalid && (editForm.get('frequency')!.dirty || editForm.get('frequency')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('frequency')?.errors?.required">
+              Це поле є обов'язковим для заповнення.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_date">Date</label>
+          <div class="d-flex">
+            <input
+              id="field_date"
+              data-cy="date"
+              type="datetime-local"
+              class="form-control"
+              name="date"
+              formControlName="date"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_description">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            id="field_description"
+            data-cy="description"
+            formControlName="description"
+          />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_latitude">Latitude</label>
+          <input type="number" class="form-control" name="latitude" id="field_latitude" data-cy="latitude" formControlName="latitude" />
+          <div *ngIf="editForm.get('latitude')!.invalid && (editForm.get('latitude')!.dirty || editForm.get('latitude')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('latitude')?.errors?.required">
+              Це поле є обов'язковим для заповнення.
+            </small>
+            <small class="form-text text-danger" [hidden]="!editForm.get('latitude')?.errors?.number"> Це поле повинно бути числом. </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_longitude">Longitude</label>
+          <input type="number" class="form-control" name="longitude" id="field_longitude" data-cy="longitude" formControlName="longitude" />
+          <div *ngIf="editForm.get('longitude')!.invalid && (editForm.get('longitude')!.dirty || editForm.get('longitude')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('longitude')?.errors?.required">
+              Це поле є обов'язковим для заповнення.
+            </small>
+            <small class="form-text text-danger" [hidden]="!editForm.get('longitude')?.errors?.number">
+              Це поле повинно бути числом.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_triangulationReport">Triangulation Report</label>
+          <select
+            class="form-control"
+            id="field_triangulationReport"
+            data-cy="triangulationReport"
+            name="triangulationReport"
+            formControlName="triangulationReport"
+            [compareWith]="compareTriangulationReport"
+          >
+            <option [ngValue]="null"></option>
+            <option [ngValue]="triangulationReportOption" *ngFor="let triangulationReportOption of triangulationReportsSharedCollection">
+              {{ triangulationReportOption.id }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Відміна</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Зберегти</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

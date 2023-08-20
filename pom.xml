@@ -281,6 +281,28 @@
             <artifactId>metrics-core</artifactId>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j</artifactId>
+            <version>6.1.2</version>
+            <!--org.slf4j:slf4j-log4j12:jar:1.7.30:compile-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+
+
+
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -944,46 +966,7 @@
                                 </execution>
                             </executions>
                         </plugin>
-                        <plugin>
-                            <groupId>org.liquibase</groupId>
-                            <artifactId>liquibase-maven-plugin</artifactId>
-                            <version>${liquibase.version}</version>
-                            <configuration>
-                                <changeLogFile>${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
-                                <diffChangeLogFile>${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
-                                <driver>com.mysql.cj.jdbc.Driver</driver>
-                                <url>jdbc:mysql://localhost:3306/intelligence</url>
-                                <defaultSchemaName>intelligence</defaultSchemaName>
-                                <username>root</username>
-                                <password></password>
-                                <referenceUrl>hibernate:spring:ua.intelligence.domain?dialect=org.hibernate.dialect.MySQL8Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
-                                <verbose>true</verbose>
-                                <logging>debug</logging>
-                                <contexts>!test</contexts>
-                            </configuration>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>org.liquibase</groupId>
-                                    <artifactId>liquibase-core</artifactId>
-                                    <version>${liquibase.version}</version>
-                                </dependency>
-                                <dependency>
-                                    <groupId>org.liquibase.ext</groupId>
-                                    <artifactId>liquibase-hibernate5</artifactId>
-                                    <version>${liquibase-hibernate5.version}</version>
-                                </dependency>
-                                <dependency>
-                                    <groupId>org.springframework.boot</groupId>
-                                    <artifactId>spring-boot-starter-data-jpa</artifactId>
-                                    <version>${spring-boot.version}</version>
-                                </dependency>
-                                <dependency>
-                                    <groupId>javax.validation</groupId>
-                                    <artifactId>validation-api</artifactId>
-                                    <version>${validation-api.version}</version>
-                                </dependency>
-                            </dependencies>
-                        </plugin>
+
                     </plugins>
                 </pluginManagement>
             </build>
@@ -1047,7 +1030,7 @@
                                 <changeLogFile>${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
                                 <diffChangeLogFile>${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
                                 <driver>com.mysql.cj.jdbc.Driver</driver>
-                                <url>jdbc:mysql://localhost:3306/intelligence</url>
+                                <url>jdbc:mysql://localhost:3306/intelligence4</url>
                                 <defaultSchemaName>intelligence</defaultSchemaName>
                                 <username>root</username>
                                 <password></password>
