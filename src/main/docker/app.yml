@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   intelligence-app:
-    image: antontaranukha/intelligence:latest
+    image: taranukhaanton/intelligence:latest
     #    image: intelligence
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
