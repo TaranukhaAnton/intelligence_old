@@ -13,12 +13,11 @@ services:
     # If you want to expose these ports outside your dev PC,
     # remove the "127.0.0.1:" prefix
     ports:
-      - 127.0.0.1:8080:8080
+      - 8080:8080
   intelligence-mysql:
     image: mysql:8.0.30
-    # volumes:
-    #   - ~/volumes/jhipster/intelligence/mysql/:/var/lib/mysql/
     volumes:
+      - ~/volumes/jhipster/intelligence/mysql/:/var/lib/mysql/
       - ./config/mysql:/etc/mysql/conf.d
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
@@ -26,7 +25,8 @@ services:
     # If you want to expose these ports outside your dev PC,
     # remove the "127.0.0.1:" prefix
     ports:
-      - 127.0.0.1:3306:3306
+      #      - 127.0.0.1:3306:3306
+      - 3306:3306
     command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
   signal-rest-api:
     image: bbernhard/signal-cli-rest-api:latest
