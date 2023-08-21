@@ -1,13 +1,6 @@
 package ua.intelligence.service;
 
-
-
+import java.util.List;
 import ua.intelligence.domain.signal.SignalMessage;
 
-import java.util.List;
-
-
-public interface RemoteApiService {
-
-    List<SignalMessage> getMessages();
-}
+public interface RemoteApiService {}

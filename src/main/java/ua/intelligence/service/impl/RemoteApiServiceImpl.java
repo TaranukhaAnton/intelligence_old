@@ -1,103 +1,80 @@
 package ua.intelligence.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.client.RestTemplate;
 import ua.intelligence.domain.Message;
 import ua.intelligence.domain.Report;
 import ua.intelligence.domain.TriangulationPoint;
-import ua.intelligence.domain.signal.DataMessage;
-import ua.intelligence.domain.signal.Envelope;
 import ua.intelligence.domain.signal.SignalMessage;
 import ua.intelligence.service.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import ua.intelligence.service.dto.SignalMessageDto;
 
 @Service
 public class RemoteApiServiceImpl implements RemoteApiService {
 
+    private final Logger log = LoggerFactory.getLogger(RemoteApiServiceImpl.class);
 
     public static final String REP_GROUP = "yXE2sBQHEVcVc79eXqePWstXd7XRMejpg/HnK/N+4bw=";
 
     public static final String FAITA = "H2UMFkV7ZH+6jMxkpUr/3zw7g6byjFqRS2TUsl26yAI=";
     public static final String STEPNO = "Btb71pNufy93e/tEZ4A9RDILd7CcdLprMB6U4Y7+KdM=";
 
-    public static final String REPORT_STORE_FLDR = "D:\\WAR_WORK\\tmp\\";
-
     public static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    private final RestTemplate restTemplate;
     private final MessageService messageService;
     private final ReportService reportService;
     private final TriangulationPointService triangulationPointService;
     private final DocxService docxService;
+    private final SignalService signalService;
 
-    public RemoteApiServiceImpl(RestTemplate restTemplate, MessageService messageRepository, ReportService reportRepository, TriangulationPointService triangulationPointService, DocxService docxService) {
-        this.restTemplate = restTemplate;
+    public RemoteApiServiceImpl(
+        MessageService messageRepository,
+        ReportService reportRepository,
+        TriangulationPointService triangulationPointService,
+        DocxService docxService,
+        SignalService signalService
+    ) {
         this.messageService = messageRepository;
         this.reportService = reportRepository;
         this.triangulationPointService = triangulationPointService;
         this.docxService = docxService;
+        this.signalService = signalService;
     }
 
-
-    //            @Scheduled(fixedDelay = 3000000)
     @Scheduled(fixedDelay = 10000)
     public void scheduleFixedDelayTask() {
-        final List<SignalMessage> messages = getMessages();
-
-
-        System.out.println("messages.size() = " + messages.size());
-        for (SignalMessage message : messages) {
-
-            final Envelope envelope = message.getEnvelope();
-            if (envelope == null) {
-                continue;
+        final Set<SignalMessageDto> signalMessages = signalService.receiveMessage();
+        log.info("Received {} messages", signalMessages.size());
+        for (SignalMessageDto message : signalMessages) {
+            if (REP_GROUP.equals(message.getGroupId())) {
+                log.info("message from REPORTS GROUP");
+                processTextReport(message);
+            } else if (STEPNO.equals(message.getGroupId())) {
+                log.info("message from STEPNO");
+                processTriangulationPoint(message);
+            } else if (FAITA.equals(message.getGroupId())) {
+                log.info("message from FAITA");
+                processTextMessage(message);
             }
-            final DataMessage dataMessage = envelope.getDataMessage();
-            if (dataMessage == null) {
-                continue;
-            }
-
-
-            String groupId = getGroupId(message);
-
-
-            if (REP_GROUP.equals(groupId)) {
-                System.out.println("REPORTS GROUP");
-
-                List<String> attPaths = downloadAttachments(message);
-                System.out.println("attPaths = " + attPaths.size());
-                final String reportPath = attPaths.get(0);
-//                if (isTextReport(reportPath)) {
-                processTextReport(message, reportPath);
-//                } else {
-//                    processDirectionFindingReport(message);
-//                }
-            } else if (STEPNO.equals(groupId)) {
-                processTriangulationPoint(dataMessage);
-            } else if (FAITA.equals(groupId)) {
-                processTextMessage(dataMessage, groupId);
-            }
-
-
         }
     }
 
-    private void processTriangulationPoint(DataMessage message) {
-        final String text = message.getMessage();
+    private void processTriangulationPoint(SignalMessageDto message) {
+        final String text = message.getText();
         if (text == null || text.isEmpty()) {
             return;
         }
@@ -116,55 +93,35 @@ public class RemoteApiServiceImpl implements RemoteApiService {
                 p.setLongitude(lon);
                 triangulationPointService.save(p);
             } catch (Exception e) {
-                e.printStackTrace();
-
-                System.out.println("text = " + text);
-
+                log.error("Error during triangulation point processing ", e);
             }
         }
     }
 
+    @Transactional
+    public void processTextReport(SignalMessageDto message) {
+        if (message.getAttachments().isEmpty()) {
+            log.info("Message has no attachments. Ignore.");
+            return;
+        }
 
-    @Override
-    public List<SignalMessage> getMessages() {
-
-//        String url = "http://localhost:8090/v1/receive/+380957319209";
-//        ResponseEntity<SignalMessage[]> response =
-//            restTemplate.getForEntity(
-//                url,
-//                SignalMessage[].class);
-//        return Arrays.asList(response.getBody());
-
-        return new LinkedList<>();
-    }
-
-    private void processTextReport(SignalMessage message, String reportPath) {
-//        final Long timestamp = message.getEnvelope().getDataMessage().getTimestamp();
-//        LocalDateTime triggerTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), TimeZone.getDefault().toZoneId());
+        if (message.getAttachments().size() > 1) {
+            log.info("Message has more than one attachment.");
+            log.info("We will process only first one.");
+        }
+        final byte[] fileContent = message.getAttachments().get(0).getContent();
 
         final Report r = new Report();
-        r.setPath(reportPath);
         r.setDate(ZonedDateTime.now(ZoneId.of("GMT+03:00")));
         r.name(repName());
+        r.setContent(fileContent);
+        r.setContentContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        reportService.save(r);
 
-        try {
-            final File file = new File(reportPath);
-            byte[] fileContent = Files.readAllBytes(file.toPath());
-            r.setContent(fileContent);
-            r.setContentContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-
-
-            reportService.save(r);
-
-            for (Message m : docxService.extractMessagesFromDocx(fileContent)) {
-                m.setReport(r);
-                messageService.save(m);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (Message m : docxService.extractMessagesFromDocx(fileContent)) {
+            m.setReport(r);
+            messageService.save(m);
         }
-
 
         final List<Message> unprocessed = messageService.findUnprocessed();
         if (unprocessed != null) {
@@ -173,50 +130,14 @@ public class RemoteApiServiceImpl implements RemoteApiService {
                 messageService.save(m);
             }
         }
-
     }
 
-    private void processDirectionFindingReport(SignalMessage message) {
-
-    }
-
-    private boolean isTextReport(String reportPath) {
-        return true;
-    }
-
-    private List<String> downloadAttachments(SignalMessage message) {
-        List<String> attPaths = new LinkedList<>();
-        final Map<String, Object> additionalProperties = message.getEnvelope().getDataMessage().getAdditionalProperties();
-        final boolean hasAttachments = additionalProperties.containsKey("attachments");
-        if (hasAttachments) {
-            final List<Map<String, Object>> attachments = (List<Map<String, Object>>) additionalProperties.get("attachments");
-            System.out.println("attachments.size() = " + attachments.size());
-
-            for (Map<String, Object> att : attachments) {
-                final String contentType = (String) att.get("contentType");
-                final String id = (String) att.get("id");
-                final Integer size = (Integer) att.get("size");
-                attPaths.add(REPORT_STORE_FLDR + id);
-                String FILE_URL = "http://localhost:8090/v1/attachments/" + id;
-                restTemplate.execute(FILE_URL, HttpMethod.GET, null, clientHttpResponse -> {
-                    File dir = new File("D:\\WAR_WORK\\tmp\\");
-                    File actualFile = new File(dir, id);
-                    StreamUtils.copy(clientHttpResponse.getBody(), new FileOutputStream(actualFile));
-                    return actualFile;
-                });
-            }
-
-
-        }
-        return attPaths;
-    }
-
-    private void processTextMessage(DataMessage dataMessage, String groupId) {
+    private void processTextMessage(SignalMessageDto message) {
         final Message m = new Message();
-        final String text = dataMessage.getMessage();
+        final String text = message.getText();
 
         if (StringUtils.isNoneEmpty(text)) {
-            m.setSourceUuid(groupId);
+            m.setSourceUuid(message.getGroupId());
             m.setText(text);
             m.setFrequency(getFrequency(text));
             m.setDate(getDate(text));
@@ -275,12 +196,10 @@ public class RemoteApiServiceImpl implements RemoteApiService {
         return "розвідувальне зведення " + formatter.format(dt) + "_" + s + ".docx";
     }
 
-
     private static ZonedDateTime getZonedDateTime(String d, String t) {
         LocalDate localDate2 = LocalDate.parse(d, DATE_FORMATTER);
         LocalTime localTime2 = LocalTime.parse(t, DateTimeFormatter.ISO_LOCAL_TIME);
         ZoneId zoneId2 = ZoneId.of("GMT+03:00");
         return ZonedDateTime.of(localDate2, localTime2, zoneId2);
     }
-
 }

@@ -90,6 +90,10 @@ management:
           autotime:
             enabled: true
 
+signal:
+  phone: +380957319209
+  url: http://10.0.10.102:8082
+
 spring:
   application:
     name: intelligence

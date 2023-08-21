@@ -19,8 +19,7 @@ logging:
     tech.jhipster: DEBUG
     org.hibernate.SQL: DEBUG
     ua.intelligence: DEBUG
-  spring.jpa.show-sql=true
-  spring.jpa.properties.hibernate.format_sql=true
+
 spring:
   devtools:
     restart:
