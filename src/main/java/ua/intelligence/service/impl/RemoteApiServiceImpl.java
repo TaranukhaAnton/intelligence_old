@@ -57,7 +57,7 @@ public class RemoteApiServiceImpl implements RemoteApiService {
 
     @Scheduled(fixedDelay = 10000)
     public void scheduleFixedDelayTask() {
-        final Set<SignalMessageDto> signalMessages = signalService.receiveMessage();
+        final List<SignalMessageDto> signalMessages = signalService.receiveMessage();
         log.info("Received {} messages", signalMessages.size());
         for (SignalMessageDto message : signalMessages) {
             if (REP_GROUP.equals(message.getGroupId())) {

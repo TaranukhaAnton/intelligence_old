@@ -84,7 +84,7 @@ public class SignalServiceImpl implements SignalService {
     }
 
     @Override
-    public Set<SignalMessageDto> receiveMessage() {
+    public List<SignalMessageDto> receiveMessage() {
         try {
             final List<SignalMessage> messages = getMessages();
 
@@ -111,10 +111,10 @@ public class SignalServiceImpl implements SignalService {
                         processGroups(m.getEnvelope().getDataMessage())
                     )
                 )
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         } catch (Exception hcee) {
             log.error(hcee.getMessage());
-            return Collections.EMPTY_SET;
+            return new ArrayList<>();
         }
     }
 
@@ -147,7 +147,7 @@ public class SignalServiceImpl implements SignalService {
                 )
                 .collect(Collectors.toList());
         } else {
-            return Collections.EMPTY_LIST;
+            return new ArrayList<>();
         }
     }
 

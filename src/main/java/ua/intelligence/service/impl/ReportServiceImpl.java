@@ -3,7 +3,6 @@ package ua.intelligence.service.impl;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -82,10 +81,6 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional(readOnly = true)
     public Page<Report> findAll(Pageable pageable) {
-
-        final Optional<Report> byId = reportRepository.findById(1l);
-
-
         log.debug("Request to get all Reports");
         final Page<Report> all = reportRepository.findAll(pageable);
         return all;
@@ -104,23 +99,19 @@ public class ReportServiceImpl implements ReportService {
         reportRepository.deleteById(id);
     }
 
-
     @Override
     public byte[] generateReport(Long id) {
         final Optional<Report> r = reportRepository.findById(id);
-        if (r.isPresent()){
+        if (r.isPresent()) {
             final Report report = r.get();
 
             final byte[] content = report.getContent();
             final String conclusion = report.getConclusion();
-            final Set<Message> messages = report.getMessages().stream().
-                filter(m -> m.getSourceUuid()!=null).collect(Collectors.toSet());
+            final Set<Message> messages = report.getMessages().stream().filter(m -> m.getSourceUuid() != null).collect(Collectors.toSet());
 
             return docxService.processReport(content, messages, conclusion);
         } else {
             return new byte[0];
         }
-
-
     }
 }

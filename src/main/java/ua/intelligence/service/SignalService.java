@@ -1,6 +1,6 @@
 package ua.intelligence.service;
 
-import java.util.Set;
+import java.util.List;
 import ua.intelligence.service.dto.AttachmentDto;
 import ua.intelligence.service.dto.SignalMessageDto;
 
@@ -10,5 +10,5 @@ import ua.intelligence.service.dto.SignalMessageDto;
 public interface SignalService {
     void sendMessage(String phone, String message, AttachmentDto... attachment);
 
-    Set<SignalMessageDto> receiveMessage();
+    List<SignalMessageDto> receiveMessage();
 }
